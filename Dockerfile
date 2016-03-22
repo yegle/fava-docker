@@ -1,7 +1,7 @@
 FROM python:3.5.1-alpine
 
 ENV BEANCOUNT_INPUT_FILE ""
-ENV FAVA_OPTIONS "-p 5555 -H 0.0.0.0"
+ENV FAVA_OPTIONS "-H 0.0.0.0"
 
 RUN apk add --update \
         libxml2 \
@@ -20,5 +20,8 @@ RUN apk add --update \
         musl-dev \
         python3-dev \
         && rm -rf /var/cache/apk/*
+
+# Default fava port number
+EXPOSE 5000
 
 CMD fava $FAVA_OPTIONS $BEANCOUNT_INPUT_FILE
