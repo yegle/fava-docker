@@ -17,7 +17,10 @@ RUN cd /root \
         && python3 -mpip uninstall --yes pip \
         && rm -rf /root \
         && apk del $BUILDDEPS \
-        && rm -rf /var/cache/apk/*
+        && rm -rf /var/cache/apk /tmp \
+        && find /usr/local/lib/python3.5 -name __pycache__ -print0|xargs -0 rm -rf \
+        && find /usr/local/lib/python3.5 -name *.pyc -print0|xargs -0 rm -f
+
 
 # Default fava port number
 EXPOSE 5000
