@@ -9,15 +9,16 @@ ENV RUNDEPS "libxml2 libxslt"
 RUN cd /root \
         && apk add --update $BUILDDEPS $RUNDEPS \
         && hg clone --config hostfingerprints.bitbucket.org=$FINGERPRINT https://bitbucket.org/blais/beancount \
+        && (cd beancount && hg log -l1) \
         && python3 -mpip install ./beancount \
         && git clone https://github.com/aumayr/fava.git \
+        && (cd fava && git log -1) \
         && make -C fava build-js \
         && rm -rf fava/fava/static/node_modules \
         && python3 -mpip install ./fava \
         && python3 -mpip uninstall --yes pip \
-        && rm -rf /root \
         && apk del $BUILDDEPS \
-        && rm -rf /var/cache/apk /tmp \
+        && rm -rf /var/cache/apk /tmp /root \
         && find /usr/local/lib/python3.5 -name __pycache__ -print0|xargs -0 rm -rf \
         && find /usr/local/lib/python3.5 -name *.pyc -print0|xargs -0 rm -f
 
