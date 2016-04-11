@@ -17,6 +17,7 @@ RUN cd /root \
         && rm -rf fava/fava/static/node_modules \
         && python3 -mpip install ./fava \
         && python3 -mpip uninstall --yes pip \
+        && find /usr/local/lib/python3.5/site-packages -name *.so -print0|xargs -0 strip -v \
         && apk del $BUILDDEPS \
         && rm -rf /var/cache/apk /tmp /root \
         && find /usr/local/lib/python3.5 -name __pycache__ -print0|xargs -0 rm -rf \
