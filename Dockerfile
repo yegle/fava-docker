@@ -2,7 +2,7 @@ FROM python:3.5.1-alpine
 
 ENV BEANCOUNT_INPUT_FILE ""
 ENV FAVA_OPTIONS "-H 0.0.0.0"
-ENV FINGERPRINT "46:de:34:e7:9b:18:cd:7f:ae:fd:8b:e3:bc:f4:1a:5e:38:d7:ac:24"
+ENV FINGERPRINT "3f:d3:c5:17:23:3c:cd:f5:2d:17:76:06:93:7e:ee:97:42:21:14:aa"
 ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++"
 ENV RUNDEPS "libxml2 libxslt"
 
