@@ -21,8 +21,8 @@ RUN cd /root \
         && find /usr/local/lib/python3.5/site-packages -name *.so -print0|xargs -0 strip -v \
         && apk del $BUILDDEPS \
         && rm -rf /var/cache/apk /tmp /root \
-        && find /usr/local/lib/python3.5 -name __pycache__ -print0|xargs -0 rm -rf \
-        && find /usr/local/lib/python3.5 -name *.pyc -print0|xargs -0 rm -f
+        && find /usr/local/lib/python3.6 -name __pycache__ -print0|xargs -0 rm -rf \
+        && find /usr/local/lib/python3.6 -name *.pyc -print0|xargs -0 rm -f
 
 
 # Default fava port number
