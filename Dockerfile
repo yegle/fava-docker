@@ -1,4 +1,4 @@
-FROM python:3.6.0-alpine
+FROM python:3.6.1-alpine
 
 ENV BEANCOUNT_INPUT_FILE ""
 ENV FAVA_OPTIONS "-H 0.0.0.0"
@@ -14,7 +14,7 @@ RUN cd /root \
         && git clone https://github.com/beancount/fava.git \
         && (cd fava && git log -1) \
         && make -C fava \
-        && make -C fava clean \
+        && make -C fava mostlyclean \
         && rm fava/CHANGES \
         && python3 -mpip install ./fava \
         && python3 -mpip uninstall --yes pip \
