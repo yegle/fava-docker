@@ -1,4 +1,4 @@
-FROM python:3.6.2-alpine
+FROM python:3.6.4-alpine
 
 ENV BEANCOUNT_INPUT_FILE ""
 ENV FAVA_OPTIONS "-H 0.0.0.0"
@@ -16,7 +16,7 @@ RUN cd /root \
         && (cd fava && git log -1) \
         && make -C fava \
         && make -C fava mostlyclean \
-        && rm fava/CHANGES \
+        && rm fava/docs/changelog.rst \
         && python3 -mpip install ./fava \
         && python3 -mpip uninstall --yes pip \
         && find /usr/local/lib/python3.?/site-packages -name *.so -print0|xargs -0 strip -v \
