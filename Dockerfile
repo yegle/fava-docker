@@ -1,4 +1,4 @@
-FROM python:3.6.4-alpine
+FROM python:3.6.5-alpine3.7
 
 ENV BEANCOUNT_INPUT_FILE ""
 ENV FAVA_OPTIONS "-H 0.0.0.0"
@@ -10,8 +10,8 @@ RUN cd /root \
         && apk add --update $BUILDDEPS $RUNDEPS \
         && hg clone --config hostfingerprints.bitbucket.org=$FINGERPRINT https://bitbucket.org/blais/beancount \
         && (cd beancount && hg log -l1) \
-        && rm -rf ./beancount/.hg \
         && python3 -mpip install ./beancount \
+        && rm -rf ./beancount/.hg \
         && git clone https://github.com/beancount/fava.git \
         && (cd fava && git log -1) \
         && make -C fava \
