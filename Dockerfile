@@ -6,22 +6,29 @@ ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g+
 ENV PV "3.6"
 
 WORKDIR /root
-RUN apk add --update ${BUILDDEPS} \
-        && hg clone --config hostsecurity.bitbucket.org:fingerprints=$FINGERPRINT https://bitbucket.org/blais/beancount \
-        && (cd beancount && hg log -l1) \
-        && git clone https://github.com/beancount/fava.git \
-        && (cd fava && git log -1) \
-        && echo "Deleting symlink files as they will cause docker build error" \
-        && find ./ -type l -delete -print \
-        && python3 -mpip install ./beancount \
-        && make -C fava \
-        && make -C fava mostlyclean \
-        && python3 -mpip install ./fava \
-        && echo "strip .so files:" \
-        && find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v \
-        && echo "remove __pycache__ directories" \
-        && find /usr/local/lib/python${PV} -name __pycache__ -exec rm -rf -v {} + \
-        && find /usr/local/lib/python${PV} -name '*.dist-info' -exec rm -rf -v {} +
+RUN apk add --update ${BUILDDEPS}
+
+RUN hg clone --config hostsecurity.bitbucket.org:fingerprints=${FINGERPRINT} https://bitbucket.org/blais/beancount
+RUN echo "Beancount version:" && cd beancount && hg log -l1
+
+RUN git clone https://github.com/beancount/fava.git
+RUN echo "Fava version:" && cd fava && git log -1
+
+RUN echo "Deleting symlink files as they will cause docker build error" && find ./ -type l -delete -print
+
+RUN echo "Install Beancount..."
+RUN python3 -mpip install ./beancount
+
+RUN echo "Install Fava..."
+RUN make -C fava
+RUN make -C fava mostlyclean
+RUN python3 -mpip install ./fava
+
+RUN echo "Strip .so files to reduce image size:"
+RUN find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v
+RUN echo "Remove unused files to reduce image size:"
+RUN find /usr/local/lib/python${PV} -name __pycache__ -exec rm -rf -v {} +
+RUN find /usr/local/lib/python${PV} -name '*.dist-info' -exec rm -rf -v {} +
 
 
 FROM python:3.6.5-alpine3.7
