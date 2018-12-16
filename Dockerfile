@@ -1,7 +1,5 @@
 FROM python:3.6.5-alpine3.7 as build_env
 
-ENV BEANCOUNT_INPUT_FILE ""
-ENV FAVA_OPTIONS "-H 0.0.0.0"
 ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
 ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++"
 # Short python version.
@@ -28,6 +26,8 @@ RUN apk add --update ${BUILDDEPS} \
 
 FROM python:3.6.5-alpine3.7
 ENV PV "3.6"
+ENV BEANCOUNT_INPUT_FILE ""
+ENV FAVA_OPTIONS "-H 0.0.0.0"
 COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin
 
