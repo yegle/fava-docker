@@ -1,41 +1,53 @@
-FROM python:3.6.5-alpine3.7 as build_env
+ARG FAVA_VERSION=1.10
+ARG BEANCOUNT_VERSION=2.2.1
+ARG NODE_BUILD_IMAGE=10.16.0-stretch
+ARG PYTHON_BUILD_IMAGE=3.7.3-stretch
+ARG PYTHON_BASE_IMAGE=3.7.3-slim
+ARG PYTHON_DIR=/usr/local/lib/python3.7/site-packages
 
-ENV FINGERPRINT "sha256:32:12:90:9a:70:64:82:1c:5b:52:cc:c3:0a:d0:79:db:e1:a8:62:1b:9a:9a:4c:f4:72:40:1c:a7:3a:d3:0a:8c"
-ENV BUILDDEPS "libxml2-dev libxslt-dev gcc musl-dev mercurial git nodejs make g++"
-# Short python version.
-ENV PV "3.6"
+FROM node:${NODE_BUILD_IMAGE} as node_build_env
+ARG FAVA_VERSION
+ENV FAVA_URL https://github.com/beancount/fava/archive/v${FAVA_VERSION}.tar.gz
 
-WORKDIR /root
-RUN apk add --update ${BUILDDEPS}
+WORKDIR /tmp/build
+RUN curl -J -L -O ${FAVA_URL}
+run tar xvf fava-${FAVA_VERSION}.tar.gz
+RUN make -C ./fava-${FAVA_VERSION}
+RUN make -C ./fava-${FAVA_VERSION} mostlyclean
+RUN echo "Version: ${FAVA_VERSION}" > ./fava-${FAVA_VERSION}/PKG-INFO
 
-RUN hg clone --config hostsecurity.bitbucket.org:fingerprints=${FINGERPRINT} https://bitbucket.org/blais/beancount
-RUN echo "Beancount version:" && cd beancount && hg log -l1
+FROM python:${PYTHON_BUILD_IMAGE} as build_env
+ARG BEANCOUNT_VERSION
+ARG FAVA_VERSION
+ARG PYTHON_DIR
 
-RUN git clone https://github.com/beancount/fava.git
-RUN echo "Fava version:" && cd fava && git log -1
+ENV BEANCOUNT_URL https://bitbucket.org/blais/beancount/get/${BEANCOUNT_VERSION}.tar.gz
 
-RUN echo "Deleting symlink files as they will cause docker build error" && find ./ -type l -delete -print
+RUN apt-get update
+RUN apt-get install -y build-essential libxml2-dev libxslt-dev
 
-RUN echo "Install Beancount..."
-RUN python3 -mpip install ./beancount
+WORKDIR /tmp/build
 
-RUN echo "Install Fava..."
-RUN make -C fava
-RUN make -C fava mostlyclean
-RUN python3 -mpip install ./fava
+# collect wheels for beancount
+RUN curl -J -L ${BEANCOUNT_URL} -o beancount-${BEANCOUNT_VERSION}.tar.gz
+RUN tar xvf beancount-${BEANCOUNT_VERSION}.tar.gz
+RUN python3 -mpip wheel ./beancount-* --wheel-dir /wheelhouse
 
-RUN echo "Strip .so files to reduce image size:"
-RUN find /usr/local/lib/python${PV}/site-packages -name *.so -print0|xargs -0 strip -v
-RUN echo "Remove unused files to reduce image size:"
-RUN find /usr/local/lib/python${PV} -name __pycache__ -exec rm -rf -v {} +
+# collect wheels for fava
+COPY --from=node_build_env /tmp/build/fava-${FAVA_VERSION} /tmp/build/fava-${FAVA_VERSION}
+RUN ls /tmp/build
+RUN python3 -mpip wheel ./fava-${FAVA_VERSION} --wheel-dir /wheelhouse
 
+# install everything from wheels
+RUN python3 -mpip install --no-index --find-links /wheelhouse fava
 
-FROM python:3.6.5-alpine3.7
-ENV PV "3.6"
-ENV BEANCOUNT_INPUT_FILE ""
-ENV FAVA_OPTIONS "-H 0.0.0.0"
-COPY --from=build_env /usr/local/lib/python${PV}/site-packages /usr/local/lib/python${PV}/site-packages
-COPY --from=build_env /usr/local/bin/fava /usr/local/bin
+RUN find ${PYTHON_DIR} -name *.so -print0|xargs -0 strip -v
+RUN find ${PYTHON_DIR} -name __pycache__ -exec rm -rf -v {} +
+
+FROM python:${PYTHON_BASE_IMAGE}
+ARG PYTHON_DIR
+COPY --from=build_env ${PYTHON_DIR} ${PYTHON_DIR}
+COPY --from=build_env /usr/local/bin/fava /usr/local/bin/fava
 
 # Default fava port number
 EXPOSE 5000
