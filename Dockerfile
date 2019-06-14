@@ -28,22 +28,40 @@ RUN apt-get install -y build-essential libxml2-dev libxslt-dev
 
 WORKDIR /tmp/build
 
-# collect wheels for beancount
 RUN curl -J -L ${BEANCOUNT_URL} -o beancount-${BEANCOUNT_VERSION}.tar.gz
 RUN tar xvf beancount-${BEANCOUNT_VERSION}.tar.gz
 RUN python3 -mpip install ./beancount-*
 
-# collect wheels for fava
 COPY --from=node_build_env /tmp/build/fava /tmp/build/fava
 RUN python3 -mpip install ./fava
 
 RUN find ${PYTHON_DIR} -name *.so -print0|xargs -0 strip -v
 RUN find ${PYTHON_DIR} -name __pycache__ -exec rm -rf -v {} +
+RUN python3 -mpip uninstall -y wheel pip
 
 FROM python:${PYTHON_BASE_IMAGE}
 ARG PYTHON_DIR
 COPY --from=build_env ${PYTHON_DIR} ${PYTHON_DIR}
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin/fava
+# list of beancount binaries available in
+# https://bitbucket.org/blais/beancount/src/default/setup.py
+COPY --from=build_env \
+            /usr/local/bin/bean-bake \
+            /usr/local/bin/bean-check \
+            /usr/local/bin/bean-doctor \
+            /usr/local/bin/bean-example \
+            /usr/local/bin/bean-format \
+            /usr/local/bin/bean-price \
+            /usr/local/bin/bean-query \
+            /usr/local/bin/bean-report \
+            /usr/local/bin/bean-sql \
+            /usr/local/bin/bean-web \
+            /usr/local/bin/bean-identify \
+            /usr/local/bin/bean-extract \
+            /usr/local/bin/bean-file \
+            /usr/local/bin/treeify \
+            /usr/local/bin/upload-to-sheets \
+            /usr/local/bin/
 
 # Default fava port number
 EXPOSE 5000
