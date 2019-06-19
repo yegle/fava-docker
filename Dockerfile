@@ -3,9 +3,7 @@ ARG SOURCE_BRANCH=master
 ARG FAVA_VERSION=${SOURCE_BRANCH}
 ARG BEANCOUNT_VERSION=2.2.1
 ARG NODE_BUILD_IMAGE=10.16.0-stretch
-ARG PYTHON_BUILD_IMAGE=3.7.3-stretch
-ARG PYTHON_BASE_IMAGE=3.7.3-slim
-ARG PYTHON_DIR=/usr/local/lib/python3.7/site-packages
+ARG PYTHON_DIR=/usr/local/lib/python3.5/dist-packages
 
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
 ARG FAVA_VERSION
@@ -17,29 +15,35 @@ RUN git checkout ${FAVA_VERSION}
 RUN make
 RUN make mostlyclean
 
-FROM python:${PYTHON_BUILD_IMAGE} as build_env
+FROM debian:stable as build_env
 ARG BEANCOUNT_VERSION
 ARG PYTHON_DIR
 
 ENV BEANCOUNT_URL https://bitbucket.org/blais/beancount/get/${BEANCOUNT_VERSION}.tar.gz
 
 RUN apt-get update
-RUN apt-get install -y build-essential libxml2-dev libxslt-dev
+RUN apt-get install -y build-essential libxml2-dev libxslt-dev curl \
+        python3 libpython3-dev python3-pip git
 
 WORKDIR /tmp/build
 
+RUN pip3 install -U setuptools
+RUN pip3 install m3-cdecimal
+
 RUN curl -J -L ${BEANCOUNT_URL} -o beancount-${BEANCOUNT_VERSION}.tar.gz
 RUN tar xvf beancount-${BEANCOUNT_VERSION}.tar.gz
-RUN python3 -mpip install ./beancount-*
+RUN pip3 install ./beancount-*
 
 COPY --from=node_build_env /tmp/build/fava /tmp/build/fava
-RUN python3 -mpip install ./fava
+RUN ls ./fava/.git
+RUN pip3 install ./fava
 
 RUN find ${PYTHON_DIR} -name *.so -print0|xargs -0 strip -v
 RUN find ${PYTHON_DIR} -name __pycache__ -exec rm -rf -v {} +
-RUN python3 -mpip uninstall -y wheel pip
 
-FROM python:${PYTHON_BASE_IMAGE}
+# Note: this is python3.5, which barely meet the requirement of beancount. We
+# will need to update to newer version once it's supported.
+FROM gcr.io/distroless/python3
 ARG PYTHON_DIR
 COPY --from=build_env ${PYTHON_DIR} ${PYTHON_DIR}
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin/fava
@@ -66,7 +70,11 @@ COPY --from=build_env \
 # Default fava port number
 EXPOSE 5000
 
-ENV BEANCOUNT_INPUT_FILE ""
-ENV FAVA_OPTIONS "-H 0.0.0.0"
+ENV BEANCOUNT_FILE ""
 
-CMD fava ${FAVA_OPTIONS} ${BEANCOUNT_INPUT_FILE}
+# Required by Click library.
+# See https://click.palletsprojects.com/en/7.x/python3/
+ENV LC_ALL "C.UTF-8"
+ENV LANG "C.UTF-8"
+
+ENTRYPOINT ["/usr/local/bin/fava", "-H", "0.0.0.0"]
