@@ -1,12 +1,10 @@
-# we use SOURCE_BRANCH to indicate the fava version.
-ARG SOURCE_BRANCH=v1.10
-ARG FAVA_VERSION=${SOURCE_BRANCH}
 ARG BEANCOUNT_VERSION=2.2.1
 ARG NODE_BUILD_IMAGE=10.16.0-stretch
 ARG PYTHON_DIR=/usr/local/lib/python3.5/dist-packages
 
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
-ARG FAVA_VERSION
+ARG SOURCE_BRANCH
+ENV FAVA_VERSION=${SOURCE_BRANCH:-v1.10}
 
 WORKDIR /tmp/build
 RUN git clone https://github.com/beancount/fava

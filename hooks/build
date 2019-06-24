@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Special case for SOURCE_BRANCH build argument. If it's `master', change it to
+# empty string so that the default value in Dockerfile works.
+
+if [[ ${SOURCE_BRANCH} == "master" ]]
+then
+    echo "=> Overriding SOURCE_BRANCH from ${SOURCE_BRANCH} to ''."
+    export SOURCE_BRANCH=""
+fi
+
+docker build --build-arg SOURCE_BRANCH=${SOURCE_BRANCH} \
+    -f ${DOCKERFILE_PATH} -t ${IMAGE_NAME} .
