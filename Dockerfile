@@ -13,7 +13,7 @@ RUN git checkout ${FAVA_VERSION}
 RUN make
 RUN make mostlyclean
 
-FROM debian:stable as build_env
+FROM debian:stretch as build_env
 ARG BEANCOUNT_VERSION
 ARG PYTHON_DIR
 
