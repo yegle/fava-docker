@@ -30,13 +30,12 @@ RUN pip3 install m3-cdecimal
 
 RUN curl -J -L ${BEANCOUNT_URL} -o beancount-${BEANCOUNT_VERSION}.tar.gz
 RUN tar xvf beancount-${BEANCOUNT_VERSION}.tar.gz
-RUN pip3 install ./beancount-*
+RUN CFLAGS=-s pip3 install ./beancount-*
 
 COPY --from=node_build_env /tmp/build/fava /tmp/build/fava
 RUN ls ./fava/.git
 RUN pip3 install ./fava
 
-RUN find ${PYTHON_DIR} -name *.so -print0|xargs -0 strip -v
 RUN find ${PYTHON_DIR} -name __pycache__ -exec rm -rf -v {} +
 
 # Note: this is python3.5, which barely meet the requirement of beancount. We
