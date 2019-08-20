@@ -24,7 +24,7 @@ ARG PYTHON_DIR
 ENV BEANCOUNT_URL https://bitbucket.org/blais/beancount/get/${BEANCOUNT_VERSION}.tar.gz
 
 RUN apt-get update
-RUN apt-get install -y build-essential libxml2-dev libxslt-dev
+RUN apt-get install -y build-essential libxml2-dev libxslt-dev git
 
 WORKDIR /tmp/build
 
@@ -34,6 +34,7 @@ RUN python3 -mpip install ./beancount-*
 
 COPY --from=node_build_env /tmp/build/fava /tmp/build/fava
 RUN python3 -mpip install ./fava
+RUN python3 -mpip install pytest
 
 RUN find ${PYTHON_DIR} -name *.so -print0|xargs -0 strip -v
 RUN find ${PYTHON_DIR} -name __pycache__ -exec rm -rf -v {} +
