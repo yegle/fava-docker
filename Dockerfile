@@ -1,7 +1,7 @@
 # we use SOURCE_BRANCH to indicate the fava version.
 ARG SOURCE_BRANCH=master
 ARG FAVA_VERSION=${SOURCE_BRANCH}
-ARG BEANCOUNT_VERSION=2.2.1
+ARG BEANCOUNT_VERSION=tip
 ARG NODE_BUILD_IMAGE=10.16.0-stretch
 ARG PYTHON_BUILD_IMAGE=3.7.3-stretch
 ARG PYTHON_BASE_IMAGE=3.7.3-slim
@@ -24,7 +24,7 @@ ARG PYTHON_DIR
 ENV BEANCOUNT_URL https://bitbucket.org/blais/beancount/get/${BEANCOUNT_VERSION}.tar.gz
 
 RUN apt-get update
-RUN apt-get install -y build-essential libxml2-dev libxslt-dev git
+RUN apt-get install -y build-essential libxml2-dev libxslt-dev
 
 WORKDIR /tmp/build
 
@@ -41,6 +41,10 @@ RUN find ${PYTHON_DIR} -name __pycache__ -exec rm -rf -v {} +
 RUN python3 -mpip uninstall -y wheel pip
 
 FROM python:${PYTHON_BASE_IMAGE}
+
+RUN apt-get update
+RUN apt-get install -y git nano
+
 ARG PYTHON_DIR
 COPY --from=build_env ${PYTHON_DIR} ${PYTHON_DIR}
 COPY --from=build_env /usr/local/bin/fava /usr/local/bin/fava
