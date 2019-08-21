@@ -4,7 +4,7 @@ ARG PYTHON_DIR=/usr/local/lib/python3.5/dist-packages
 
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
 ARG SOURCE_BRANCH
-ENV FAVA_VERSION=${SOURCE_BRANCH:-v1.10}
+ENV FAVA_VERSION=${SOURCE_BRANCH:-v1.11}
 
 WORKDIR /tmp/build
 RUN git clone https://github.com/beancount/fava
