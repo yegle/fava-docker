@@ -73,5 +73,6 @@ ENV BEANCOUNT_FILE ""
 # See https://click.palletsprojects.com/en/7.x/python3/
 ENV LC_ALL "C.UTF-8"
 ENV LANG "C.UTF-8"
+ENV FAVA_HOST "0.0.0.0"
 
-ENTRYPOINT ["/usr/local/bin/fava", "-H", "0.0.0.0"]
+ENTRYPOINT ["/usr/local/bin/fava"]
