@@ -44,7 +44,7 @@ FROM python:${PYTHON_BASE_IMAGE}
 
 RUN apt-get update
 RUN apt-get install -y git nano
-RUN pip install smart_importer
+RUN python3 -mpip install smart_importer
 
 ARG PYTHON_DIR
 COPY --from=build_env ${PYTHON_DIR} ${PYTHON_DIR}
