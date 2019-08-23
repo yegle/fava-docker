@@ -43,7 +43,7 @@ RUN python3 -mpip uninstall -y wheel pip
 FROM python:${PYTHON_BASE_IMAGE}
 
 RUN apt-get update
-RUN apt-get install -y git nano
+RUN apt-get install -y git nano gcc build-essential
 RUN python3 -mpip install smart_importer
 
 ARG PYTHON_DIR
