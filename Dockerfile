@@ -1,4 +1,4 @@
-ARG BEANCOUNT_VERSION=2.2.1
+ARG BEANCOUNT_VERSION=2.2.3
 ARG NODE_BUILD_IMAGE=10.16.0-stretch
 ARG PYTHON_DIR=/usr/local/lib/python3.5/dist-packages
 
