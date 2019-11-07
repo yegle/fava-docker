@@ -1,6 +1,5 @@
 ARG BEANCOUNT_VERSION=2.2.3
-ARG NODE_BUILD_IMAGE=10.16.0-stretch
-ARG PYTHON_DIR=/usr/local/lib/python3.5/dist-packages
+ARG NODE_BUILD_IMAGE=10.17.0-buster
 
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
 ARG SOURCE_BRANCH
@@ -13,56 +12,34 @@ RUN git checkout ${FAVA_VERSION}
 RUN make
 RUN make mostlyclean
 
-FROM debian:stretch as build_env
+FROM debian:buster as build_env
 ARG BEANCOUNT_VERSION
-ARG PYTHON_DIR
 
 ENV BEANCOUNT_URL https://bitbucket.org/blais/beancount/get/${BEANCOUNT_VERSION}.tar.gz
 
 RUN apt-get update
 RUN apt-get install -y build-essential libxml2-dev libxslt-dev curl \
-        python3 libpython3-dev python3-pip git
+        python3 libpython3-dev python3-pip git python3-venv
 
 WORKDIR /tmp/build
 
-RUN pip3 install -U setuptools
-RUN pip3 install m3-cdecimal
+ENV PATH "/app/bin:$PATH"
+
+RUN python3 -mvenv /app
+
+RUN pip3 install -U pip setuptools
 
 RUN curl -J -L ${BEANCOUNT_URL} -o beancount-${BEANCOUNT_VERSION}.tar.gz
 RUN tar xvf beancount-${BEANCOUNT_VERSION}.tar.gz
-RUN CFLAGS=-s pip3 install ./beancount-*
+RUN CFLAGS=-s pip3 install -U ./beancount-*
 
 COPY --from=node_build_env /tmp/build/fava /tmp/build/fava
-RUN ls ./fava/.git
-RUN pip3 install ./fava
+RUN pip3 install -U ./fava
 
-RUN find ${PYTHON_DIR} -name __pycache__ -exec rm -rf -v {} +
+RUN find /app -name __pycache__ -exec rm -rf -v {} +
 
-# Note: this is python3.5, which barely meet the requirement of beancount. We
-# will need to update to newer version once it's supported.
-FROM gcr.io/distroless/python3
-ARG PYTHON_DIR
-COPY --from=build_env ${PYTHON_DIR} ${PYTHON_DIR}
-COPY --from=build_env /usr/local/bin/fava /usr/local/bin/fava
-# list of beancount binaries available in
-# https://bitbucket.org/blais/beancount/src/default/setup.py
-COPY --from=build_env \
-            /usr/local/bin/bean-bake \
-            /usr/local/bin/bean-check \
-            /usr/local/bin/bean-doctor \
-            /usr/local/bin/bean-example \
-            /usr/local/bin/bean-format \
-            /usr/local/bin/bean-price \
-            /usr/local/bin/bean-query \
-            /usr/local/bin/bean-report \
-            /usr/local/bin/bean-sql \
-            /usr/local/bin/bean-web \
-            /usr/local/bin/bean-identify \
-            /usr/local/bin/bean-extract \
-            /usr/local/bin/bean-file \
-            /usr/local/bin/treeify \
-            /usr/local/bin/upload-to-sheets \
-            /usr/local/bin/
+FROM gcr.io/distroless/python3-debian10
+COPY --from=build_env /app /app
 
 # Default fava port number
 EXPOSE 5000
@@ -74,5 +51,6 @@ ENV BEANCOUNT_FILE ""
 ENV LC_ALL "C.UTF-8"
 ENV LANG "C.UTF-8"
 ENV FAVA_HOST "0.0.0.0"
+ENV PATH "/app/bin:$PATH"
 
-ENTRYPOINT ["/usr/local/bin/fava"]
+ENTRYPOINT ["fava"]
