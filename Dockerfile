@@ -5,12 +5,15 @@ FROM node:${NODE_BUILD_IMAGE} as node_build_env
 ARG SOURCE_BRANCH
 ENV FAVA_VERSION=${SOURCE_BRANCH:-v1.12}
 
+RUN apt-get update
+RUN apt-get install -y tox libpython3-dev
 WORKDIR /tmp/build
 RUN git clone https://github.com/beancount/fava
 WORKDIR /tmp/build/fava
 RUN git checkout ${FAVA_VERSION}
 RUN make
 RUN make mostlyclean
+RUN make test
 
 FROM debian:buster as build_env
 ARG BEANCOUNT_VERSION
@@ -19,7 +22,10 @@ ENV BEANCOUNT_URL https://bitbucket.org/blais/beancount/get/${BEANCOUNT_VERSION}
 
 RUN apt-get update
 RUN apt-get install -y build-essential libxml2-dev libxslt-dev curl \
-        python3 libpython3-dev python3-pip git python3-venv
+        python3 libpython3-dev python3-pip git python3-venv python3-pytest \
+        python3-nose
+
+RUN apt-get install -y python3-chardet
 
 WORKDIR /tmp/build
 
@@ -31,7 +37,16 @@ RUN pip3 install -U pip setuptools
 
 RUN curl -J -L ${BEANCOUNT_URL} -o beancount-${BEANCOUNT_VERSION}.tar.gz
 RUN tar xvf beancount-${BEANCOUNT_VERSION}.tar.gz
-RUN CFLAGS=-s pip3 install -U ./beancount-*
+RUN CFLAGS=-s pip3 install -U ./blais-beancount-*/
+
+RUN apt-get install -y python3-bottle
+RUN apt-get install -y python3-dateutil
+RUN apt-get install -y python3-lxml
+RUN apt-get install -y python3-ply
+RUN apt-get install -y python3-requests
+RUN apt-get install -y python3-oauth2client python3-magic
+RUN apt-get install -y python3-googleapi
+RUN cd ./blais-beancount-* && make && PYTHONPATH=$PWD/beancount nosetests3
 
 COPY --from=node_build_env /tmp/build/fava /tmp/build/fava
 RUN pip3 install -U ./fava
