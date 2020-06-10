@@ -35,6 +35,8 @@ RUN git checkout ${BEANCOUNT_VERSION}
 RUN CFLAGS=-s pip3 install -U /tmp/build/beancount
 RUN pip3 install -U /tmp/build/fava
 
+RUN pip3 uninstall -y pip
+
 RUN find /app -name __pycache__ -exec rm -rf -v {} +
 
 FROM gcr.io/distroless/python3-debian10
