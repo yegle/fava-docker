@@ -8,6 +8,9 @@ ENV FAVA_VERSION=${SOURCE_BRANCH:-v1.20.1}
 WORKDIR /tmp/build
 RUN git clone https://github.com/beancount/fava
 
+RUN apt-get update
+RUN apt-get install -y python-babel
+
 WORKDIR /tmp/build/fava
 RUN git checkout ${FAVA_VERSION}
 RUN make
