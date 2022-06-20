@@ -49,10 +49,6 @@ EXPOSE 5000
 
 ENV BEANCOUNT_FILE ""
 
-# Required by Click library.
-# See https://click.palletsprojects.com/en/7.x/python3/
-ENV LC_ALL "C.UTF-8"
-ENV LANG "C.UTF-8"
 ENV FAVA_HOST "0.0.0.0"
 ENV PATH "/app/bin:$PATH"
 
