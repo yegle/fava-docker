@@ -1,7 +1,7 @@
 ARG BEANCOUNT_VERSION=2.3.5
 ARG FAVA_VERSION=v1.21
 
-ARG NODE_BUILD_IMAGE=16-buster
+ARG NODE_BUILD_IMAGE=16-bullseye
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
 
 WORKDIR /tmp/build
@@ -15,7 +15,7 @@ RUN git checkout ${FAVA_VERSION}
 RUN make
 RUN make mostlyclean
 
-FROM debian:buster as build_env
+FROM debian:bullseye as build_env
 ARG BEANCOUNT_VERSION
 
 RUN apt-get update
@@ -41,7 +41,7 @@ RUN pip3 uninstall -y pip
 
 RUN find /app -name __pycache__ -exec rm -rf -v {} +
 
-FROM gcr.io/distroless/python3-debian10
+FROM gcr.io/distroless/python3-debian11
 COPY --from=build_env /app /app
 
 # Default fava port number
