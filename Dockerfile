@@ -25,7 +25,6 @@ RUN apt-get install -y build-essential libxml2-dev libxslt-dev curl \
 
 ENV PATH "/app/bin:$PATH"
 RUN python3 -mvenv /app
-RUN pip3 install -U pip setuptools
 COPY --from=node_build_env /tmp/build/fava /tmp/build/fava
 
 WORKDIR /tmp/build
