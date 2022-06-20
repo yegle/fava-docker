@@ -1,8 +1,8 @@
 ARG BEANCOUNT_VERSION=2.3.5
-ARG NODE_BUILD_IMAGE=14.18.1-buster
+ARG FAVA_VERSION=v1.21
 
+ARG NODE_BUILD_IMAGE=16-buster
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
-ENV FAVA_VERSION=v1.21
 
 WORKDIR /tmp/build
 RUN git clone https://github.com/beancount/fava
