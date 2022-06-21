@@ -43,7 +43,7 @@ jobs:
           images: yegle/fava
           tags: |
             type=raw,value=latest,enabled={{is_default_branch}}
-            type=ref,event=branch
+            type=ref,event=branch,enabled={{!is_default_branch}}
             type=ref,event=pr
 
       - name: Build and push Docker image
