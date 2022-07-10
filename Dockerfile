@@ -1,22 +1,29 @@
 ARG BEANCOUNT_VERSION=2.3.5
-ARG NODE_BUILD_IMAGE=14.18.1-buster
+ARG FAVA_VERSION=v1.21
 
+ARG NODE_BUILD_IMAGE=16-bullseye
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
-ARG SOURCE_BRANCH
-ENV FAVA_VERSION=${SOURCE_BRANCH:-v1.21}
+ARG FAVA_VERSION
 
 WORKDIR /tmp/build
 RUN git clone https://github.com/beancount/fava
 
 RUN apt-get update
-RUN apt-get install -y python-babel
+RUN apt-get install -y python3-babel
 
 WORKDIR /tmp/build/fava
 RUN git checkout ${FAVA_VERSION}
 RUN make
-RUN make mostlyclean
+RUN rm -rf .*cache && \
+    rm -rf .eggs && \
+    rm -rf .tox && \
+    rm -rf build && \
+    rm -rf dist && \
+    rm -rf frontend/node_modules && \
+    find . -type f -name '*.py[c0]' -delete && \
+    find . -type d -name "__pycache__" -delete
 
-FROM debian:buster as build_env
+FROM debian:bullseye as build_env
 ARG BEANCOUNT_VERSION
 
 RUN apt-get update
@@ -26,7 +33,6 @@ RUN apt-get install -y build-essential libxml2-dev libxslt-dev curl \
 
 ENV PATH "/app/bin:$PATH"
 RUN python3 -mvenv /app
-RUN pip3 install -U pip setuptools
 COPY --from=node_build_env /tmp/build/fava /tmp/build/fava
 
 WORKDIR /tmp/build
@@ -42,7 +48,7 @@ RUN pip3 uninstall -y pip
 
 RUN find /app -name __pycache__ -exec rm -rf -v {} +
 
-FROM gcr.io/distroless/python3-debian10
+FROM gcr.io/distroless/python3-debian11
 COPY --from=build_env /app /app
 
 # Default fava port number
@@ -50,10 +56,6 @@ EXPOSE 5000
 
 ENV BEANCOUNT_FILE ""
 
-# Required by Click library.
-# See https://click.palletsprojects.com/en/7.x/python3/
-ENV LC_ALL "C.UTF-8"
-ENV LANG "C.UTF-8"
 ENV FAVA_HOST "0.0.0.0"
 ENV PATH "/app/bin:$PATH"
 
