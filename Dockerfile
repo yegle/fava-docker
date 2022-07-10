@@ -13,7 +13,14 @@ RUN apt-get install -y python3-babel
 WORKDIR /tmp/build/fava
 RUN git checkout ${FAVA_VERSION}
 RUN make
-RUN make mostlyclean
+RUN rm -rf .*cache && \
+    rm -rf .eggs && \
+    rm -rf .tox && \
+    rm -rf build && \
+    rm -rf dist && \
+    rm -rf frontend/node_modules && \
+    find . -type f -name '*.py[c0]' -delete && \
+    find . -type d -name "__pycache__" -delete
 
 FROM debian:bullseye as build_env
 ARG BEANCOUNT_VERSION
