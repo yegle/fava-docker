@@ -1,0 +1,1 @@
+beancount-reds-plugins==0.3.0 --hash=sha256:4bf7d56a9d8084acb50591283cf1724eaa035c2f2df2ac70a3370b0d068da6ed
