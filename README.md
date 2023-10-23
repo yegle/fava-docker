@@ -31,10 +31,10 @@ docker run -d \
 version: "3.0"
 services:
   fava:
+    container_name: fava
     image: yegle/fava
     ports:
       - 5000:5000
-    container_name: fava
     environment:
       - BEANCOUNT_FILE=/bean/example.beancount
     volumes:
