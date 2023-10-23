@@ -2,15 +2,12 @@
 
 A Dockerfile for beancount-fava
 
-## Environment Variable
-
-- `BEANCOUNT_FILE`: path to your beancount file. Default to empty string.
 
 ## Usage Example
 
-You can get started creating a container from this image you can either use docker-compose or the docker cli.
+You can get started creating a container from this image, you can either use docker-compose or the docker cli.
 
-Assuming you have example.bean in the current directory:
+Assuming you have `example.bean` in the current directory:
 
 ### Docker Cli
 
@@ -41,6 +38,12 @@ services:
       - ${PWD}/:/bean
     restart: unless-stopped
 ```
+
+## Environment Variable
+
+| Parameter | Value |
+| :----: | --- |
+| `BEANCOUNT_FILE` | path to your beancount file. Default to empty string. |
 
 ## Note on auto build
 
