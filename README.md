@@ -8,15 +8,39 @@ A Dockerfile for beancount-fava
 
 ## Usage Example
 
-```bash
-# assume you have example.bean in the current directory
-docker run -v $PWD:/bean -e BEANCOUNT_FILE=/bean/example.bean yegle/fava
+You can get started creating a container from this image you can either use docker-compose or the docker cli.
+
+Assuming you have example.bean in the current directory:
+
+### Docker Compose
+
+```yml
+---
+version: "3.0"
+services:
+  fava:
+    image: yegle/fava
+    ports:
+      - 5000:5000
+    container_name: fava
+    environment:
+      - BEANCOUNT_FILE=/bean/example.beancount
+    volumes:
+      - ${PWD}/:/bean
+    restart: unless-stopped
 ```
 
-NOTE: The command above does not expose the Fava HTTP server port outside of Docker's internal network.
-This allows you [to use your own reverse proxy](https://github.com/beancount/fava/tree/main/contrib/docker#advanced).
-If you do want to expose the service without using a reverse proxy for local testing, you must add `-p 5000:5000`
-to access Fava on http://localhost:5000.
+### Docker Cli
+
+```bash
+docker run -d \
+    --name=syncthing \
+    -v $PWD:/bean \
+    -e BEANCOUNT_FILE=/bean/example.bean \
+    -p 5000:5000 \
+    --restart unless-stopped \
+    yegle/fava
+```
 
 ## Note on auto build
 
