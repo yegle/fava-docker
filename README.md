@@ -12,6 +12,18 @@ You can get started creating a container from this image you can either use dock
 
 Assuming you have example.bean in the current directory:
 
+### Docker Cli
+
+```bash
+docker run -d \
+    --name=syncthing \
+    -v $PWD:/bean \
+    -e BEANCOUNT_FILE=/bean/example.bean \
+    -p 5000:5000 \
+    --restart unless-stopped \
+    yegle/fava
+```
+
 ### Docker Compose
 
 ```yml
@@ -28,18 +40,6 @@ services:
     volumes:
       - ${PWD}/:/bean
     restart: unless-stopped
-```
-
-### Docker Cli
-
-```bash
-docker run -d \
-    --name=syncthing \
-    -v $PWD:/bean \
-    -e BEANCOUNT_FILE=/bean/example.bean \
-    -p 5000:5000 \
-    --restart unless-stopped \
-    yegle/fava
 ```
 
 ## Note on auto build
