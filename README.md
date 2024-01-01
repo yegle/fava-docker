@@ -13,12 +13,12 @@ Assuming you have `example.bean` in the current directory:
 
 ```bash
 docker run -d \
-    --name=syncthing \
+    --name=fava \
     -v $PWD:/bean \
     -e BEANCOUNT_FILE=/bean/example.bean \
     -p 5000:5000 \
     --restart unless-stopped \
-    yegle/fava
+    grostim/fava-docker
 ```
 
 ### Docker Compose
@@ -29,7 +29,7 @@ version: "3.0"
 services:
   fava:
     container_name: fava
-    image: yegle/fava
+    image: grostim/fava-docker
     ports:
       - 5000:5000
     environment:
