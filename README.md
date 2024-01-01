@@ -1,7 +1,12 @@
 # fava-docker
 
-A Dockerfile for beancount-fava
-
+A Dockerfile for beancount-fava , based on https://github.com/yegle/fava-docker but with additional features:
+- smart-importer
+- fava-investor
+- Beanprice.git
+- poppler-utils
+- git
+- nano
 
 ## Usage Example
 

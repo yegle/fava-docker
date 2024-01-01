@@ -44,14 +44,19 @@ RUN git checkout ${BEANCOUNT_VERSION}
 RUN CFLAGS=-s pip3 install -U /tmp/build/beancount
 RUN pip3 install -U /tmp/build/fava
 ADD requirements.txt .
-RUN pip3 install --require-hashes -U -r requirements.txt
+RUN pip3 install -U -r requirements.txt
 
 RUN pip3 uninstall -y pip
 
 RUN find /app -name __pycache__ -exec rm -rf -v {} +
 
-FROM gcr.io/distroless/python3-debian11
+#Distroless is too limited for my use.
+#FROM gcr.io/distroless/python3-debian11
+# I use Python
+FROM python:3.9.18-bullseye
 COPY --from=build_env /app /app
+RUN apt-get update
+RUN apt-get install -y git nano poppler-utils wget
 
 # Default fava port number
 EXPOSE 5000
@@ -60,5 +65,6 @@ ENV BEANCOUNT_FILE ""
 
 ENV FAVA_HOST "0.0.0.0"
 ENV PATH "/app/bin:$PATH"
+ENV PYTHONPATH "/myData/myTools:$PYTHONPATH"
 
 ENTRYPOINT ["fava"]
