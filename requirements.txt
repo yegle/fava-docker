@@ -7,3 +7,4 @@ iexfinance>=0.5.0
 pricehist>=1.4.6
 tariochbctools>=0.32.0
 fava-dashboards @ git+https://github.com/andreasgerstmayr/fava-dashboards.git@main
+fava-portfolio-returns @ git+https://github.com/andreasgerstmayr/fava-portfolio-returns.git@main
