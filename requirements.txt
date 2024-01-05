@@ -1,7 +1,7 @@
 beancount-reds-plugins>=0.3.0
 beancount-periodic>=0.1.2
 smart-importer>=0.4
-fava-investor>=0.5.0
+fava-investor @ git+https://github.com/redstreet/fava_investor.git@main
 https://codeload.github.com/beancount/beanprice/zip/refs/heads/master
 iexfinance>=0.5.0
 pricehist>=1.4.6
