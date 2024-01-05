@@ -51,11 +51,3 @@ services:
 | Parameter | Value |
 | :----: | --- |
 | `BEANCOUNT_FILE` | path to your beancount file. Default to empty string. |
-
-## Note on auto build
-
-The [docker image](https://hub.docker.com/r/yegle/fava) was switched
-from build by Docker Hub to Github Actions. The image label pattern is
-changed: instead of labeled `version-1.xx` it's now labeled `v1.xx`.
-
-You can check the auto build logs at https://github.com/yegle/fava-docker/actions.
