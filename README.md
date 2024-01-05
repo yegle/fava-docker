@@ -8,6 +8,7 @@ A Dockerfile for beancount-fava , based on https://github.com/yegle/fava-docker 
 - poppler-utils
 - git
 - nano
+- fava dashboards
 
 ## Usage Example
 
