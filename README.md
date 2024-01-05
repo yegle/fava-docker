@@ -9,6 +9,7 @@ A Dockerfile for beancount-fava , based on https://github.com/yegle/fava-docker 
 - git
 - nano
 - fava dashboards
+- fava-portfolio-returns
 
 ## Usage Example
 
