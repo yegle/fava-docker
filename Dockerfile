@@ -53,7 +53,7 @@ RUN find /app -name __pycache__ -exec rm -rf -v {} +
 #Distroless is too limited for my use.
 #FROM gcr.io/distroless/python3-debian11
 # I use Python
-FROM python:3.9.18-bullseye
+FROM python:3.12.3-bullseye
 COPY --from=build_env /app /app
 RUN apt-get update
 RUN apt-get install -y git nano poppler-utils wget
