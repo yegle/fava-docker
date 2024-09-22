@@ -7,11 +7,12 @@ name: Publish Docker image
 
 on:
   push:
-    branches: ["latest"]
+    tags:
+      - 'v*'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: duquewu/fava
 
 jobs:
   build-and-push-image:
