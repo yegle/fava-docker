@@ -9,6 +9,9 @@ You can get started creating a container from this image, you can either use doc
 
 Assuming you have `example.bean` in the current directory:
 
+### Docker Image Tags
+* [v1.28](https://github.com/duquewu/fava-docker/pkgs/container/fava/277479719?tag=v1.28), [latest](https://github.com/duquewu/fava-docker/pkgs/container/fava/277479719?tag=latest)
+
 ### Docker Cli
 
 ```bash
@@ -18,7 +21,7 @@ docker run -d \
     -e BEANCOUNT_FILE=/bean/example.bean \
     -p 5000:5000 \
     --restart unless-stopped \
-    ghcr.io/duquewu/fava
+    ghcr.io/duquewu/fava:latest
 ```
 
 ### Docker Compose
@@ -29,7 +32,7 @@ version: "3.0"
 services:
   fava:
     container_name: fava
-    image: ghcr.io/duquewu/fava
+    image: ghcr.io/duquewu/fava:latest
     ports:
       - 5000:5000
     environment:
