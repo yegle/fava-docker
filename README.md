@@ -18,7 +18,7 @@ docker run -d \
     -e BEANCOUNT_FILE=/bean/example.bean \
     -p 5000:5000 \
     --restart unless-stopped \
-    ghcr.io/duquewu/fava-docker
+    ghcr.io/duquewu/fava
 ```
 
 ### Docker Compose
@@ -29,7 +29,7 @@ version: "3.0"
 services:
   fava:
     container_name: fava
-    image: ghcr.io/duquewu/fava-docker
+    image: ghcr.io/duquewu/fava
     ports:
       - 5000:5000
     environment:
