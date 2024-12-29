@@ -1,7 +1,7 @@
 ARG BEANCOUNT_VERSION=2.3.6
 ARG FAVA_VERSION=v1.29
 
-ARG NODE_BUILD_IMAGE=22-bullseye
+ARG NODE_BUILD_IMAGE=22-bookworm
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
 ARG FAVA_VERSION
 
@@ -23,7 +23,7 @@ RUN rm -rf .*cache && \
     find . -type f -name '*.py[c0]' -delete && \
     find . -type d -name "__pycache__" -delete
 
-FROM debian:bullseye as build_env
+FROM debian:bookwarm as build_env
 ARG BEANCOUNT_VERSION
 
 RUN apt-get update
