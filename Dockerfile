@@ -23,7 +23,7 @@ RUN rm -rf .*cache && \
     find . -type f -name '*.py[c0]' -delete && \
     find . -type d -name "__pycache__" -delete
 
-FROM debian:bookwarm as build_env
+FROM debian:bookworm as build_env
 ARG BEANCOUNT_VERSION
 
 RUN apt-get update
