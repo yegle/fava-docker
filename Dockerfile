@@ -1,7 +1,7 @@
 ARG BEANCOUNT_VERSION=2.3.6
 ARG FAVA_VERSION=v1.30
 
-ARG NODE_BUILD_IMAGE=16-bullseye
+ARG NODE_BUILD_IMAGE=22-bookworm
 FROM node:${NODE_BUILD_IMAGE} as node_build_env
 ARG FAVA_VERSION
 
@@ -23,7 +23,7 @@ RUN rm -rf .*cache && \
     find . -type f -name '*.py[c0]' -delete && \
     find . -type d -name "__pycache__" -delete
 
-FROM debian:bullseye as build_env
+FROM debian:bookworm as build_env
 ARG BEANCOUNT_VERSION
 
 RUN apt-get update
@@ -46,6 +46,7 @@ RUN pip3 install -U /tmp/build/fava
 ADD requirements.txt .
 RUN pip3 install --require-hashes -U -r requirements.txt
 RUN pip3 install git+https://github.com/beancount/beanprice.git@41576e2ac889e4825e4985b6f6c56aa71de28304
+RUN pip3 install git+https://github.com/andreasgerstmayr/fava-portfolio-returns.git@de68b54f3ac517adfde3a4ccb41fdb09a0da41d1
 
 RUN pip3 uninstall -y pip
 

@@ -1,3 +1,7 @@
 beancount-reds-plugins==0.3.0 --hash=sha256:4bf7d56a9d8084acb50591283cf1724eaa035c2f2df2ac70a3370b0d068da6ed
+fava-plugins==1.0 --hash=sha256:3668ccd1fdf3f744ef9e65c2972e1e6cf20ad34e6f25f86a1828fe7ce8fcf13b
+
+# Manual specification of python-dateutil is a workaround for https://github.com/yegle/fava-docker/issues/39
+python-dateutil==2.8.2 --hash=sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9
 beancount-periodic==0.1.2 --hash=sha256:352fc97be1ff17351d62273b00a41a1f454f3bc6b4b7e88d6d4b08854fe3a412
 
