@@ -1,7 +1,7 @@
 # fava-docker
 
-A Dockerfile for beancount-fava
-
+A Dockerfile for [beancount-fava](https://github.com/beancount/fava),
+now the default web UI for [beancount](https://github.com/beancount/beancount).
 
 ## Usage Example
 
