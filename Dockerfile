@@ -23,6 +23,10 @@ RUN rm -rf .*cache && \
     find . -type f -name '*.py[c0]' -delete && \
     find . -type d -name "__pycache__" -delete
 
+# Why not use `python:bookworm`? Because the final app is served by
+# distroless Python image, which is Debian + Python from Debain APT
+# repo. The python intepreter in the `python:bookworm` image is not from
+# Debian APT repo.
 FROM debian:bookworm AS build_env
 ARG BEANCOUNT_VERSION
 
