@@ -49,10 +49,14 @@ RUN git checkout ${BEANCOUNT_VERSION}
 RUN CFLAGS=-s pip3 install -U /tmp/build/beancount
 RUN pip3 install -U /tmp/build/fava
 ADD requirements.txt .
+RUN pip3 install --require-hashes -U -r requirements.txt
+
+# Add requirements-extras.txt; it will be used by the next conditional block
+# if BUILD_FLAVOR is full.
+ADD requirements-extras.txt .
+
 RUN if [ "${BUILD_FLAVOR}" = "full" ]; then \
-    pip3 install --require-hashes -U -r requirements.txt && \
-    pip3 install git+https://github.com/beancount/beanprice.git@41576e2ac889e4825e4985b6f6c56aa71de28304 && \
-    pip3 install git+https://github.com/andreasgerstmayr/fava-portfolio-returns.git@de68b54f3ac517adfde3a4ccb41fdb09a0da41d1 ; \
+    pip3 install -U -r requirements-extras.txt ; \
     fi
 
 RUN pip3 uninstall -y pip
