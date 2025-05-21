@@ -19,6 +19,9 @@ jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flavor: [full, minimum]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -43,9 +46,17 @@ jobs:
         with:
           images: yegle/fava
           tags: |
-            type=raw,value=latest,enabled={{is_default_branch}}
-            type=ref,event=branch,enabled={{!is_default_branch}}
-            type=ref,event=pr
+            # set latest tag for default branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' && matrix.flavor == 'full' }}
+            type=raw,value=latest-minimum,enable=${{ github.ref == 'refs/heads/master' && matrix.flavor == 'minimum' }}
+
+            # branch events
+            type=ref,event=branch,suffix=${{ matrix.flavor == 'full' && '' || '-minimum' }}
+            # PR events
+            type=ref,event=pr,suffix=${{ matrix.flavor == 'full' && '' || '-minimum' }}
+            # semver tags like v1.2.3 or v1.2.3-minimum
+            type=semver,pattern={{version}},suffix=${{ matrix.flavor == 'full' && '' || '-minimum' }}
+            type=semver,pattern={{major}}.{{minor}},suffix=${{ matrix.flavor == 'full' && '' || '-minimum' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -55,3 +66,5 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BUILD_FLAVOR=${{ matrix.flavor }}
